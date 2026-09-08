@@ -75,7 +75,7 @@ export default function Home() {
               </div>
               <div className="flex items-center gap-5">
                 <p className="text-amber-400 font-semibold uppercase tracking-[0.25em] text-xs w-14">Time</p>
-                <p className="text-white font-light text-sm md:text-base tracking-widest">06:00 AM</p>
+                <p className="text-white font-light text-sm md:text-base tracking-widest">06:00 AM-11:00 AM</p>
               </div>
               <div className="flex items-center gap-5">
                 <p className="text-amber-400 font-semibold uppercase tracking-[0.25em] text-xs w-14">Venue</p>
