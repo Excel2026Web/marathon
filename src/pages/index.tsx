@@ -22,15 +22,23 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <div className="min-h-screen flex flex-col bg-black">
-      <nav className="relative z-50 w-full bg-black/80 backdrop-blur-md border-b border-amber-500/40 px-6 sm:px-10 md:px-14 lg:px-20 py-4 flex items-center shadow-[0_1px_20px_rgba(245,158,11,0.15)]">
+      <nav className="relative z-50 w-full bg-black/80 backdrop-blur-md border-b border-amber-500/40 px-6 sm:px-10 md:px-14 lg:px-20 py-4 flex items-center justify-between shadow-[0_1px_20px_rgba(245,158,11,0.15)]">
         <Image
           src="/logo.png"
           alt="Excel Logo"
-          width={120}
-          height={48}
-          className="object-contain h-10 w-auto"
+          width={180}
+          height={64}
+          className="object-contain h-16 w-auto"
           priority
         />
+        <div className={`flex items-baseline gap-2 ${bebasNeue.className}`}>
+          <span className="text-2xl md:text-3xl lg:text-4xl tracking-wide uppercase text-white leading-none">
+            HEADSTART
+          </span>
+          <span className="text-2xl md:text-3xl lg:text-4xl tracking-wide uppercase leading-none text-transparent [-webkit-text-stroke:1px_#f59e0b] md:[-webkit-text-stroke:1.5px_#f59e0b]">
+            2.0
+          </span>
+        </div>
       </nav>
 
       <main className="relative flex-1 flex items-center overflow-hidden bg-[#0a0a0a] font-sans">
