@@ -65,7 +65,7 @@ export default function Home() {
 
             {/* Subtitle */}
             <h2 className={`text-xl md:text-2xl font-semibold text-amber-100 mb-8 tracking-[0.3em] uppercase ${oswald.className}`}>
-              10K Mini Marathon
+              10KM Mini Marathon
             </h2>
 
             {/* Event Details */}
