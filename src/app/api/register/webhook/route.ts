@@ -9,7 +9,7 @@ import {
 } from "@/lib/db";
 import { sendRegistrationConfirmationMail } from "@/lib/mailer";
 
-export const runtime = "nodejs";
+export const runtime = "edge";
 
 /**
  * Razorpay webhook endpoint — modelled on
