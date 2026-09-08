@@ -28,14 +28,14 @@ export default function Home() {
           alt="Excel Logo"
           width={180}
           height={64}
-          className="object-contain h-16 w-auto"
+          className="object-contain h-10 sm:h-12 md:h-16 w-auto"
           priority
         />
-        <div className={`flex items-baseline gap-2 ${bebasNeue.className}`}>
-          <span className="text-2xl md:text-3xl lg:text-4xl tracking-wide uppercase text-white leading-none">
+        <div className={`flex items-baseline gap-1.5 sm:gap-2 ${bebasNeue.className}`}>
+          <span className="text-xl sm:text-2xl md:text-3xl lg:text-4xl tracking-wide uppercase text-white leading-none">
             HEADSTART
           </span>
-          <span className="text-2xl md:text-3xl lg:text-4xl tracking-wide uppercase leading-none text-transparent [-webkit-text-stroke:1px_#f59e0b] md:[-webkit-text-stroke:1.5px_#f59e0b]">
+          <span className="text-xl sm:text-2xl md:text-3xl lg:text-4xl tracking-wide uppercase leading-none text-transparent [-webkit-text-stroke:1px_#f59e0b] md:[-webkit-text-stroke:1.5px_#f59e0b]">
             2.0
           </span>
         </div>
@@ -51,23 +51,21 @@ export default function Home() {
             className="object-cover object-center opacity-90"
             priority
           />
-          {/* Gradient overlay to make text pop on the right side */}
-          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-black/20 to-black/90"></div>
+          {/* Gradient overlay for readability */}
+          <div className="absolute inset-0 bg-black/60 md:bg-gradient-to-r md:from-transparent md:via-black/20 md:to-black/90"></div>
         </div>
 
-        {/* Content Aligned to Right & Centered Vertically */}
-        <div className="relative z-20 w-full flex flex-col justify-center flex-1 py-10 md:py-16 pr-6 sm:pr-10 md:pr-14 lg:pr-20 xl:pr-24 pl-6 min-h-min">
+        {/* Content Aligned to Right on Desktop, Centered on Mobile */}
+        <div className="relative z-20 w-full flex flex-col justify-center flex-1 py-10 md:py-16 px-6 sm:px-10 md:px-14 lg:px-20 xl:px-24 min-h-min">
           
-          <div className="flex flex-col items-start max-w-xl text-left drop-shadow-[0_4px_4px_rgba(0,0,0,0.8)] ml-auto my-auto">
+          <div className="flex flex-col items-start w-full max-w-xl text-left drop-shadow-[0_4px_4px_rgba(0,0,0,0.8)] mx-auto md:ml-auto md:mr-0">
             
-            {/* Top info removed from here */}
-
             {/* Main Title */}
-            <div className={`mb-3 flex items-baseline gap-4 ${bebasNeue.className}`}>
-              <h1 className="text-6xl md:text-8xl lg:text-[8rem] tracking-wide uppercase text-white leading-none">
+            <div className={`mb-3 flex flex-wrap items-baseline gap-2 sm:gap-4 ${bebasNeue.className}`}>
+              <h1 className="text-5xl sm:text-6xl md:text-8xl lg:text-[8rem] tracking-wide uppercase text-white leading-none">
                 HEADSTART
               </h1>
-              <h1 className="text-6xl md:text-8xl lg:text-[8rem] tracking-wide uppercase leading-none text-transparent [-webkit-text-stroke:2px_#f59e0b] lg:[-webkit-text-stroke:2.5px_#f59e0b]">
+              <h1 className="text-5xl sm:text-6xl md:text-8xl lg:text-[8rem] tracking-wide uppercase leading-none text-transparent [-webkit-text-stroke:1.5px_#f59e0b] md:[-webkit-text-stroke:2px_#f59e0b] lg:[-webkit-text-stroke:2.5px_#f59e0b]">
                 2.0
               </h1>
             </div>
