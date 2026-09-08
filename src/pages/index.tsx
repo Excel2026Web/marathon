@@ -1,5 +1,16 @@
 import Head from 'next/head';
 import Image from 'next/image';
+import { Bebas_Neue, Oswald } from 'next/font/google';
+
+const bebasNeue = Bebas_Neue({
+  weight: '400',
+  subsets: ['latin'],
+});
+
+const oswald = Oswald({
+  weight: ['300', '400', '500', '600', '700'],
+  subsets: ['latin'],
+});
 
 export default function Home() {
   return (
@@ -29,44 +40,38 @@ export default function Home() {
           
           <div className="flex flex-col items-start max-w-xl text-left drop-shadow-[0_4px_4px_rgba(0,0,0,0.8)]">
             
-            {/* Top info (Date & Venue) */}
-            <p className="text-amber-200/90 font-semibold tracking-[0.2em] text-[10px] md:text-xs mb-4 uppercase flex items-center gap-2 md:gap-3">
-              <span>11 Oct 2026</span>
-              <span className="w-1.5 h-1.5 rounded-full bg-amber-400 shadow-[0_0_8px_rgba(251,191,36,0.8)]"></span>
-              <span>Durbar Hall</span>
-            </p>
+            {/* Top info removed from here */}
 
             {/* Main Title */}
-            <div className="mb-3">
-              <h1 className="text-5xl md:text-7xl lg:text-[7rem] font-black tracking-tighter uppercase text-white leading-none">
+            <div className={`mb-3 flex items-baseline gap-4 ${bebasNeue.className}`}>
+              <h1 className="text-6xl md:text-8xl lg:text-[8rem] tracking-wide uppercase text-white leading-none">
                 HEADSTART
               </h1>
-              <h1 className="text-5xl md:text-7xl lg:text-[7rem] font-black tracking-tighter uppercase leading-none text-transparent [-webkit-text-stroke:2px_#f59e0b] lg:[-webkit-text-stroke:2.5px_#f59e0b] mt-1">
+              <h1 className="text-6xl md:text-8xl lg:text-[8rem] tracking-wide uppercase leading-none text-transparent [-webkit-text-stroke:2px_#f59e0b] lg:[-webkit-text-stroke:2.5px_#f59e0b]">
                 2.0
               </h1>
             </div>
 
             {/* Subtitle */}
-            <h2 className="text-xl md:text-2xl font-extrabold text-amber-100 mb-6 tracking-widest uppercase">
+            <h2 className={`text-xl md:text-2xl font-semibold text-amber-100 mb-8 tracking-[0.3em] uppercase ${oswald.className}`}>
               10K Mini Marathon
             </h2>
 
-            {/* Tagline & Info */}
-            <div className="space-y-4 mb-8">
-              <p className="text-lg md:text-xl font-bold text-amber-50/95 tracking-wider">
-                TOGETHER. INSPIRED. FORWARD.
-              </p>
-              
-              <div className="flex flex-col gap-1.5">
-                <p className="text-gray-200 text-base">
-                  <span className="text-amber-400 font-bold">Rs 350</span> &mdash; Mecians
-                </p>
-                <p className="text-gray-200 text-base">
-                  <span className="text-amber-400 font-bold">Rs 500</span> &mdash; Public <span className="text-gray-400 text-xs">(Early Bird Tickets)</span>
-                </p>
+            {/* Event Details */}
+            <div className={`flex flex-col gap-3 mb-10 border-l-2 border-amber-500 pl-4 ${oswald.className}`}>
+              <div className="flex items-center gap-5">
+                <p className="text-amber-400 font-semibold uppercase tracking-[0.25em] text-xs w-14">Date</p>
+                <p className="text-white font-light text-sm md:text-base tracking-widest">11 Oct 2026</p>
+              </div>
+              <div className="flex items-center gap-5">
+                <p className="text-amber-400 font-semibold uppercase tracking-[0.25em] text-xs w-14">Time</p>
+                <p className="text-white font-light text-sm md:text-base tracking-widest">06:00 AM</p>
+              </div>
+              <div className="flex items-center gap-5">
+                <p className="text-amber-400 font-semibold uppercase tracking-[0.25em] text-xs w-14">Venue</p>
+                <p className="text-white font-light text-sm md:text-base tracking-widest">Durbar Hall</p>
               </div>
             </div>
-
             {/* Action Buttons */}
             <div className="flex flex-col sm:flex-row gap-6 items-start sm:items-center w-full">
               <a 
@@ -75,7 +80,7 @@ export default function Home() {
                 rel="noopener noreferrer"
                 className="group relative inline-flex items-center justify-center px-8 py-4 font-bold text-black transition-all duration-300 bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 focus:outline-none overflow-hidden shadow-[0_0_25px_rgba(245,158,11,0.4)] hover:shadow-[0_0_35px_rgba(245,158,11,0.6)]"
               >
-                <span className="relative z-10 flex items-center gap-3 uppercase tracking-[0.2em] text-xs md:text-sm font-extrabold">
+                <span className={`relative z-10 flex items-center gap-3 uppercase tracking-[0.3em] text-sm md:text-base font-semibold ${oswald.className}`}>
                   Register Now
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 md:h-5 md:w-5 group-hover:translate-x-2 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M14 5l7 7m0 0l-7 7m7-7H3" />
