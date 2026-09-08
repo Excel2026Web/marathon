@@ -50,10 +50,10 @@ export default function Home() {
         {/* Content Aligned to Right on Desktop, Centered on Mobile */}
         <div className="relative z-20 w-full flex flex-col justify-center flex-1 py-10 md:py-16 px-6 sm:px-10 md:px-14 lg:px-20 xl:px-24 min-h-min">
 
-          <div className="flex flex-col items-start w-full max-w-xl text-left drop-shadow-[0_4px_4px_rgba(0,0,0,0.8)] mx-auto md:ml-auto md:mr-0">
+          <div className="flex flex-col items-start w-fit text-left drop-shadow-[0_4px_4px_rgba(0,0,0,0.8)] mx-auto md:ml-auto md:mr-0">
 
             {/* Main Title */}
-            <div className={`mb-3 flex flex-wrap items-baseline gap-2 sm:gap-4 ${bebasNeue.className}`}>
+            <div className={`mb-3 flex items-baseline gap-2 sm:gap-4 whitespace-nowrap ${bebasNeue.className}`}>
               <h1 className="text-5xl sm:text-6xl md:text-8xl lg:text-[8rem] tracking-wide uppercase text-white leading-none">
                 HEADSTART
               </h1>
