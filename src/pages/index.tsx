@@ -41,9 +41,9 @@ export default function Home() {
         </div>
       </nav>
 
-      <main className="relative flex-1 flex items-center overflow-hidden bg-[#0a0a0a] font-sans">
+      <main className="relative flex-1 flex flex-col overflow-y-auto overflow-x-hidden bg-[#0a0a0a] font-sans">
         {/* Background Image */}
-        <div className="absolute inset-0 z-0">
+        <div className="absolute inset-0 z-0 min-h-full">
           <Image 
             src="/background.jpg"
             alt="Headstart 2.0 Runner Background"
@@ -55,10 +55,10 @@ export default function Home() {
           <div className="absolute inset-0 bg-gradient-to-r from-transparent via-black/20 to-black/90"></div>
         </div>
 
-        {/* Content Aligned to Right */}
-        <div className="relative z-20 w-full flex justify-end h-full py-12 md:py-16 pr-6 sm:pr-10 md:pr-14 lg:pr-20 xl:pr-24 pl-6">
+        {/* Content Aligned to Right & Centered Vertically */}
+        <div className="relative z-20 w-full flex flex-col justify-center flex-1 py-10 md:py-16 pr-6 sm:pr-10 md:pr-14 lg:pr-20 xl:pr-24 pl-6 min-h-min">
           
-          <div className="flex flex-col items-start max-w-xl text-left drop-shadow-[0_4px_4px_rgba(0,0,0,0.8)]">
+          <div className="flex flex-col items-start max-w-xl text-left drop-shadow-[0_4px_4px_rgba(0,0,0,0.8)] ml-auto my-auto">
             
             {/* Top info removed from here */}
 
