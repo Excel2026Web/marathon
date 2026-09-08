@@ -1,0 +1,299 @@
+import { createTransport, type Transporter } from "nodemailer";
+import type { StoredRegistration } from "./registration";
+import { CATEGORY_LABELS } from "./registration";
+
+const SMTP_HOST = process.env.SMTP_HOST;
+const SMTP_USER = process.env.SMTP_USER;
+const SMTP_PASS = process.env.SMTP_PASS;
+const SMTP_PORT = parseInt(process.env.SMTP_PORT || "465", 10);
+const SMTP_FROM = process.env.SMTP_FROM || "Excel MEC <noreply@excelmec.org>";
+
+let transporter: Transporter | null = null;
+
+function getTransporter(): Transporter | null {
+  if (!SMTP_HOST || !SMTP_USER || !SMTP_PASS) {
+    console.warn("Mailer not configured (SMTP_* env missing). Skipping email.");
+    return null;
+  }
+  if (!transporter) {
+    transporter = createTransport({
+      pool: true,
+      host: SMTP_HOST,
+      port: SMTP_PORT,
+      secure: true,
+      auth: { user: SMTP_USER, pass: SMTP_PASS },
+      tls: { ciphers: "SSLv3" },
+    });
+  }
+  return transporter;
+}
+
+/**
+ * Mail shell reproduced verbatim from
+ * Excel-Merch-Backend/src/utils/mailTemplates/index.html, with the same
+ * {{MAIN_HEADER}} / {{DATE}} / {{BODY_HEADER}} / {{BODY_TEXT}} substitution
+ * that repo's getOrderConfirmationHTML() performs.
+ */
+function renderShell(opts: {
+  mainHeader: string;
+  bodyHeader: string;
+  bodyText: string;
+}) {
+  const dateText = new Date().toLocaleString("en-IN", {
+    timeZone: "Asia/Kolkata",
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
+
+  const rawHtml = `<!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Transitional //EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
+<head>
+  <!--[if gte mso 9]>
+  <xml>
+    <o:OfficeDocumentSettings>
+      <o:AllowPNG/>
+      <o:PixelsPerInch>96</o:PixelsPerInch>
+    </o:OfficeDocumentSettings>
+  </xml>
+  <![endif]-->
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="x-apple-disable-message-reformatting">
+  <title>Excel Merch</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Google+Sans:ital,opsz,wght@0,17..18,400..700;1,17..18,400..700&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
+
+  <style type="text/css">
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #0F1E28; /* Premium Dark Theme Background */
+      font-family: 'Google Sans', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+    table, tr, td {
+      vertical-align: top;
+      border-collapse: collapse;
+    }
+    .main-container {
+      max-width: 600px;
+      margin: 40px auto;
+      background-color: #ffffff;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+    }
+    /* Buttons */
+    .btn {
+      display: inline-block;
+      background-color: #5A1E47; /* Theme Magenta Accent */
+      color: #ffffff;
+      text-decoration: none;
+      padding: 16px 36px;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 14px;
+      letter-spacing: 0.5px;
+      transition: transform 0.3s ease, background-color 0.3s ease;
+    }
+    .btn:hover {
+      background-color: #7A2861;
+    }
+    /* Social Icons */
+    .social-icon img {
+      width: 32px;
+      height: 32px;
+      display: block;
+      transition: opacity 0.3s ease;
+    }
+    .social-icon:hover img {
+      opacity: 0.8;
+    }
+
+    @media (max-width: 620px) {
+      .main-container {
+        border-radius: 0;
+      }
+    }
+  </style>
+</head>
+
+<body style="margin: 0; padding: 0; background-color: #0F1E28;">
+  <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #0F1E28; padding: 50px 0;">
+    <tr>
+      <td align="center">
+
+        <table class="main-container" width="600" cellpadding="0" cellspacing="0" border="0" style="max-width: 600px; width: 100%; background: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 8px 32px rgba(0,0,0,0.25);">
+
+          <!-- Header -->
+          <tr>
+            <td style="padding: 40px 50px 20px;">
+              <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                  <td align="left" style="vertical-align: middle;">
+                    <p style="margin: 0; color: #5A1E47; font-family: 'Google Sans', 'Inter', sans-serif; font-size: 14px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;">
+                      {{DATE}}
+                    </p>
+                  </td>
+                  <td align="right" style="vertical-align: middle;">
+                    <img src="https://storage.googleapis.com/excel-2026-static/logotext.png" alt="Excel Merch" style="height: 80px; width: auto; display: block;" />
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Hero Section -->
+          <tr>
+            <td style="padding: 20px 50px 40px;">
+              <h1 style="margin: 0 0 16px 0; color: #0F1E28; font-family: 'Google Sans', 'Inter', sans-serif; font-size: 34px; font-weight: 700; line-height: 1.2; letter-spacing: -0.5px;">
+                {{MAIN_HEADER}}
+              </h1>
+            </td>
+          </tr>
+
+          <!-- Body Text -->
+          <tr>
+            <td style="padding: 0 50px 50px;">
+              <h2 style="margin: 0 0 20px 0; color: #0F1E28; font-family: 'Google Sans', 'Inter', sans-serif; font-size: 22px; font-weight: 700; line-height: 1.3;">
+                {{BODY_HEADER}}
+              </h2>
+              <div style="color: #4A5568; font-family: 'Google Sans', 'Inter', sans-serif; font-size: 16px; line-height: 1.6; font-weight: 400;">
+                {{BODY_TEXT}}
+              </div>
+            </td>
+          </tr>
+
+          <!-- Divider -->
+          <tr>
+            <td style="padding: 0 50px;">
+              <hr style="border: none; border-top: 1px solid #E2E8F0; margin: 0;" />
+            </td>
+          </tr>
+
+          <!-- Need Help -->
+          <tr>
+            <td style="padding: 50px; background-color: #FAFAFA; text-align: center;">
+              <h3 style="margin: 0 0 12px 0; color: #0F1E28; font-family: 'Google Sans', 'Inter', sans-serif; font-size: 20px; font-weight: 700;">
+                Need Assistance?
+              </h3>
+              <p style="margin: 0 0 24px 0; color: #64748B; font-family: 'Google Sans', 'Inter', sans-serif; font-size: 15px; line-height: 1.5;">
+                Our dedicated support team is here to help you with any questions.
+              </p>
+              <a href="mailto:merch@excelmec.org?subject=Support%20Request%3A%20Excel%20Merchandise" class="btn" style="display: inline-block; background-color: #5A1E47; color: #ffffff; text-decoration: none; padding: 16px 36px; border-radius: 8px; font-family: 'Google Sans', 'Inter', sans-serif; font-weight: 700; font-size: 14px;">
+                Contact Support
+              </a>
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td style="background-color: #0F1E28; padding: 50px; text-align: center; border-top: 2px solid #5A1E47;">
+
+              <!-- Real Social Icons -->
+              <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom: 35px;">
+                <tr>
+                  <td align="center">
+                    <table cellpadding="0" cellspacing="0" border="0" style="display: inline-block;">
+                      <tr>
+                        <!-- Instagram -->
+                        <td style="padding: 0 12px;">
+                          <a href="https://www.instagram.com/excelmec/" target="_blank" class="social-icon">
+                            <img src="https://img.icons8.com/color/48/000000/instagram-new--v1.png" width="32" height="32" alt="Instagram" style="display:block;border:0;height:32px;width:32px;">
+                          </a>
+                        </td>
+                        <!-- LinkedIn -->
+                        <td style="padding: 0 12px;">
+                          <a href="https://www.linkedin.com/company/excelmec/" target="_blank" class="social-icon">
+                            <img src="https://img.icons8.com/color/48/000000/linkedin.png" width="32" height="32" alt="LinkedIn" style="display:block;border:0;height:32px;width:32px;">
+                          </a>
+                        </td>
+                        <!-- Facebook -->
+                        <td style="padding: 0 12px;">
+                          <a href="https://www.facebook.com/excelmec" target="_blank" class="social-icon">
+                            <img src="https://img.icons8.com/color/48/000000/facebook-new.png" width="32" height="32" alt="Facebook" style="display:block;border:0;height:32px;width:32px;">
+                          </a>
+                        </td>
+                        <!-- X (Twitter) -->
+                        <td style="padding: 0 12px;">
+                          <a href="https://twitter.com/excelmec" target="_blank" class="social-icon">
+                            <img src="https://img.icons8.com/ios-filled/48/ffffff/twitterx--v1.png" width="32" height="32" alt="X" style="display:block;border:0;height:32px;width:32px;">
+                          </a>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+
+              <p style="margin: 0 0 12px 0; color: #FFFFFF; font-family: 'Google Sans', 'Inter', sans-serif; font-size: 15px; font-weight: 700; letter-spacing: 1px;">
+                MODEL ENGINEERING COLLEGE
+              </p>
+              <p style="margin: 0 0 24px 0; color: #94A3B8; font-family: 'Google Sans', 'Inter', sans-serif; font-size: 14px; font-weight: 400;">
+                Thrikkakara · Kochi · Kerala 682021
+              </p>
+              <p style="margin: 0; color: #64748B; font-family: 'Google Sans', 'Inter', sans-serif; font-size: 13px; font-weight: 400;">
+                © 2026 EXCEL MEC · ALL RIGHTS RESERVED
+              </p>
+            </td>
+          </tr>
+
+        </table>
+
+        <table width="600" cellpadding="0" cellspacing="0" border="0" style="max-width: 600px; width: 100%;">
+          <tr>
+            <td style="padding: 24px 20px;">
+              <p style="margin: 0; text-align: center; color: #64748B; font-family: 'Google Sans', 'Inter', sans-serif; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; font-weight: 500;">
+                This message was sent to you as a valued Excel Merch client
+              </p>
+            </td>
+          </tr>
+        </table>
+
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`;
+
+  return rawHtml
+    .replace("{{MAIN_HEADER}}", opts.mainHeader)
+    .replace("{{DATE}}", dateText)
+    .replace("{{BODY_HEADER}}", opts.bodyHeader)
+    .replace("{{BODY_TEXT}}", opts.bodyText);
+}
+
+export async function sendRegistrationConfirmationMail(reg: StoredRegistration) {
+  const t = getTransporter();
+  if (!t) return false;
+
+  const transport =
+    reg.transportRequired === "yes" ? "Required" : "Not required";
+
+  const bodyTextRow1 = `<p style="font-size: 14px; line-height: 170%;">Your registration for <b>Headstart 2.0 &mdash; 10K Mini Marathon</b> (Excel 2026 Marathon) with registration id ${reg.orderId} has been confirmed.</p>`;
+  const bodyTextRow2 = `<p style="font-size: 14px; line-height: 170%;">Category: ${CATEGORY_LABELS[reg.category]}<br/>T-shirt size: ${reg.tshirtSize}<br/>Transportation: ${transport}</p>`;
+  const bodyTextRow3 = `<p style="font-size: 14px; line-height: 170%;">Total amount: &#8377;${reg.amount}</p>`;
+  const bodyTextRow4 = `<p style="font-size: 14px; line-height: 170%;"><b>Event:</b> 11 Oct 2026 &middot; 06:00 AM &middot; Durbar Hall</p>`;
+  const bodyText = `${bodyTextRow1}\n${bodyTextRow2}\n${bodyTextRow3}\n${bodyTextRow4}`;
+
+  const html = renderShell({
+    mainHeader: "Registration Confirmation",
+    bodyHeader: `Hi ${reg.fullName}!`,
+    bodyText,
+  });
+
+  try {
+    await t.sendMail({
+      from: SMTP_FROM,
+      to: reg.email,
+      subject: "Headstart 2.0 — Registration Confirmed",
+      html,
+    });
+    return true;
+  } catch (err) {
+    console.error("Failed to send confirmation mail", err);
+    return false;
+  }
+}

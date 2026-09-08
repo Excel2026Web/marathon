@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import Link from 'next/link';
 import { Bebas_Neue, Oswald } from 'next/font/google';
 
 const bebasNeue = Bebas_Neue({
@@ -85,10 +86,8 @@ export default function Home() {
 
             {/* Register Button */}
             <div className="flex flex-col sm:flex-row gap-6 items-start sm:items-center w-full">
-              <a
-                href="https://bit.ly/headstart"
-                target="_blank"
-                rel="noopener noreferrer"
+              <Link
+                href="/register"
                 className="group relative inline-flex items-center justify-center px-8 py-4 font-bold text-black transition-all duration-300 bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 focus:outline-none overflow-hidden shadow-[0_0_25px_rgba(245,158,11,0.4)] hover:shadow-[0_0_35px_rgba(245,158,11,0.6)]"
               >
                 <span className={`relative z-10 flex items-center gap-3 uppercase tracking-[0.3em] text-sm md:text-base font-semibold ${oswald.className}`}>
@@ -98,7 +97,7 @@ export default function Home() {
                   </svg>
                 </span>
                 <div className="absolute inset-0 h-full w-0 bg-white/30 transition-all duration-300 ease-out group-hover:w-full z-0"></div>
-              </a>
+              </Link>
             </div>
 
           </div>
