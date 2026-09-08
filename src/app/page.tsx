@@ -1,4 +1,3 @@
-import Head from 'next/head';
 import Image from 'next/image';
 import { Bebas_Neue, Oswald } from 'next/font/google';
 
@@ -14,14 +13,7 @@ const oswald = Oswald({
 
 export default function Home() {
   return (
-    <>
-      <Head>
-        <title>Headstart 2.0 | 10K Mini Marathon</title>
-        <meta name="description" content="Join Headstart 2.0, the 10K mini marathon running at Durbar Hall on 11th Oct 2026." />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-      <div className="min-h-screen flex flex-col bg-black">
+    <div className="min-h-screen flex flex-col bg-black">
       <nav className="relative z-50 w-full bg-black/80 backdrop-blur-md border-b border-amber-500/40 px-6 sm:px-10 md:px-14 lg:px-20 py-4 flex items-center justify-between shadow-[0_1px_20px_rgba(245,158,11,0.15)]">
         <Image
           src="/logo.png"
@@ -44,7 +36,7 @@ export default function Home() {
       <main className="relative flex-1 flex flex-col overflow-y-auto overflow-x-hidden bg-[#0a0a0a] font-sans">
         {/* Background Image */}
         <div className="absolute inset-0 z-0 min-h-full">
-          <Image 
+          <Image
             src="/background.jpg"
             alt="Headstart 2.0 Runner Background"
             fill
@@ -57,9 +49,9 @@ export default function Home() {
 
         {/* Content Aligned to Right on Desktop, Centered on Mobile */}
         <div className="relative z-20 w-full flex flex-col justify-center flex-1 py-10 md:py-16 px-6 sm:px-10 md:px-14 lg:px-20 xl:px-24 min-h-min">
-          
+
           <div className="flex flex-col items-start w-full max-w-xl text-left drop-shadow-[0_4px_4px_rgba(0,0,0,0.8)] mx-auto md:ml-auto md:mr-0">
-            
+
             {/* Main Title */}
             <div className={`mb-3 flex flex-wrap items-baseline gap-2 sm:gap-4 ${bebasNeue.className}`}>
               <h1 className="text-5xl sm:text-6xl md:text-8xl lg:text-[8rem] tracking-wide uppercase text-white leading-none">
@@ -90,11 +82,12 @@ export default function Home() {
                 <p className="text-white font-light text-sm md:text-base tracking-widest">Durbar Hall</p>
               </div>
             </div>
-            {/* Action Buttons */}
+
+            {/* Register Button */}
             <div className="flex flex-col sm:flex-row gap-6 items-start sm:items-center w-full">
-              <a 
-                href="https://bit.ly/headstart" 
-                target="_blank" 
+              <a
+                href="https://bit.ly/headstart"
+                target="_blank"
                 rel="noopener noreferrer"
                 className="group relative inline-flex items-center justify-center px-8 py-4 font-bold text-black transition-all duration-300 bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 focus:outline-none overflow-hidden shadow-[0_0_25px_rgba(245,158,11,0.4)] hover:shadow-[0_0_35px_rgba(245,158,11,0.6)]"
               >
@@ -111,7 +104,6 @@ export default function Home() {
           </div>
         </div>
       </main>
-      </div>
-    </>
+    </div>
   );
 }
