@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Bebas_Neue, Oswald } from "next/font/google";
@@ -28,7 +28,6 @@ interface FormState {
   courseBranchYear: string;
 
   tshirtSize: string;
-  tshirtSizeOther: string;
   transportRequired: YesNo | "";
 
   bloodGroup: string;
@@ -54,7 +53,6 @@ const INITIAL: FormState = {
   college: "",
   courseBranchYear: "",
   tshirtSize: "",
-  tshirtSizeOther: "",
   transportRequired: "",
   bloodGroup: "",
   hasMedicalConditions: "",
@@ -81,7 +79,9 @@ const STEP_TITLES = [
   "Review & Pay",
 ];
 
-const TSHIRT_SIZES = ["XS", "S", "M", "L", "XL", "XXL", "XXXL", "Other"];
+const TSHIRT_SIZES = ["XS", "S", "M", "L", "XL", "XXL", "XXXL"];
+
+const MEC_COLLEGE = "Government Model Engineering College";
 const BLOOD_GROUPS = [
   "A+",
   "A-",
@@ -361,10 +361,9 @@ export default function RegisterPage() {
 
   const fee = form.category ? FEES[form.category] : null;
 
-  const resolvedTshirt = useMemo(() => {
-    if (form.tshirtSize === "Other") return form.tshirtSizeOther.trim();
-    return form.tshirtSize;
-  }, [form.tshirtSize, form.tshirtSizeOther]);
+  // MEC students are always Government Model Engineering College — don't ask.
+  const college =
+    form.category === "mec" ? MEC_COLLEGE : form.college.trim();
 
   /* ---------------- validation ---------------- */
 
@@ -389,8 +388,6 @@ export default function RegisterPage() {
 
     if (s === 2) {
       if (!form.tshirtSize) e.tshirtSize = "Select a T-shirt size";
-      else if (form.tshirtSize === "Other" && !form.tshirtSizeOther.trim())
-        e.tshirtSizeOther = "Please specify your size";
       if (!form.transportRequired) e.transportRequired = "Select an option";
     }
 
@@ -449,9 +446,9 @@ export default function RegisterPage() {
       email: form.email,
       phone: form.phone,
       category: form.category,
-      college: form.college,
+      college,
       courseBranchYear: form.courseBranchYear,
-      tshirtSize: resolvedTshirt,
+      tshirtSize: form.tshirtSize,
       transportRequired: form.transportRequired,
       bloodGroup: form.bloodGroup,
       hasMedicalConditions: form.hasMedicalConditions,
@@ -700,12 +697,21 @@ export default function RegisterPage() {
                           </>
                         )}
                       </div>
-                      <TextField
-                        label="College / Institution"
-                        value={form.college}
-                        onChange={(v) => set("college", v)}
-                        hint="If applicable."
-                      />
+                      {form.category === "mec" ? (
+                        <div className="text-sm text-white/60">
+                          <span className="block text-sm font-medium tracking-wide text-amber-100">
+                            College / Institution
+                          </span>
+                          <p className="mt-2 text-white/80">{MEC_COLLEGE}</p>
+                        </div>
+                      ) : (
+                        <TextField
+                          label="College / Institution"
+                          value={form.college}
+                          onChange={(v) => set("college", v)}
+                          hint="If applicable."
+                        />
+                      )}
                       <TextField
                         label="Course / Branch and Year of Study"
                         value={form.courseBranchYear}
@@ -729,15 +735,6 @@ export default function RegisterPage() {
                           label: s,
                         }))}
                       />
-                      {form.tshirtSize === "Other" && (
-                        <TextField
-                          label="Specify your T-shirt size"
-                          required
-                          value={form.tshirtSizeOther}
-                          onChange={(v) => set("tshirtSizeOther", v)}
-                          error={errors.tshirtSizeOther}
-                        />
-                      )}
                       <RadioGroup
                         label="Is transportation facility required?"
                         required
@@ -894,7 +891,7 @@ export default function RegisterPage() {
                   {step === 5 && (
                     <ReviewStep
                       form={form}
-                      resolvedTshirt={resolvedTshirt}
+                      college={college}
                       fee={fee}
                       payError={payError}
                     />
@@ -962,12 +959,12 @@ function Row({ k, v }: { k: string; v: string }) {
 
 function ReviewStep({
   form,
-  resolvedTshirt,
+  college,
   fee,
   payError,
 }: {
   form: FormState;
-  resolvedTshirt: string;
+  college: string;
   fee: number | null;
   payError: string | null;
 }) {
@@ -993,9 +990,9 @@ function ReviewStep({
           k="Category"
           v={form.category === "mec" ? "MEC Student" : "Other / Public"}
         />
-        <Row k="College / Institution" v={form.college} />
+        <Row k="College / Institution" v={college} />
         <Row k="Course / Branch / Year" v={form.courseBranchYear} />
-        <Row k="T-shirt size" v={resolvedTshirt} />
+        <Row k="T-shirt size" v={form.tshirtSize} />
         <Row
           k="Transportation"
           v={form.transportRequired === "yes" ? "Required" : "Not required"}

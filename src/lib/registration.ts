@@ -10,6 +10,9 @@ export const CATEGORY_LABELS: Record<Category, string> = {
   other: "Other College / Institution Student / Public",
 };
 
+// MEC students are always from this college — never asked on the form.
+export const MEC_COLLEGE = "Government Model Engineering College";
+
 export function feeForCategory(category: string): number | null {
   if (category === "mec" || category === "other") {
     return FEES[category];
@@ -121,7 +124,7 @@ export function validateRegistration(
     email,
     phone,
     category: body.category,
-    college: str(body.college),
+    college: body.category === "mec" ? MEC_COLLEGE : str(body.college),
     courseBranchYear: str(body.courseBranchYear),
     tshirtSize,
     transportRequired,
