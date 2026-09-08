@@ -17,7 +17,16 @@ export const RAZORPAY_KEY_SECRET = keySecret ?? "";
 // secret configured on the webhook in the Razorpay dashboard.
 export const RAZORPAY_WEBHOOK_SECRET = process.env.RAZORPAY_WEBHOOK_SECRET ?? "";
 
-export const razorpay = new Razorpay({
-  key_id: RAZORPAY_KEY_ID,
-  key_secret: RAZORPAY_KEY_SECRET,
-});
+// Lazily instantiated so that the Razorpay constructor (which throws when
+// key_id is empty) is never called during Next.js / Cloudflare build-time
+// module evaluation — only when a real request arrives at runtime.
+let _razorpay: Razorpay | null = null;
+export function getRazorpay(): Razorpay {
+  if (!_razorpay) {
+    _razorpay = new Razorpay({
+      key_id: RAZORPAY_KEY_ID,
+      key_secret: RAZORPAY_KEY_SECRET,
+    });
+  }
+  return _razorpay;
+}

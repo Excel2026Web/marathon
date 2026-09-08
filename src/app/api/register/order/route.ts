@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { randomUUID } from "crypto";
-import { razorpay, RAZORPAY_KEY_ID } from "@/lib/razorpay";
+import { getRazorpay, RAZORPAY_KEY_ID } from "@/lib/razorpay";
 import { feeForCategory, validateRegistration } from "@/lib/registration";
 import { insertPendingRegistration } from "@/lib/db";
 
@@ -29,7 +29,7 @@ export async function POST(req: Request) {
 
   let razOrder;
   try {
-    razOrder = await razorpay.orders.create({
+    razOrder = await getRazorpay().orders.create({
       amount: amount * 100, // paise
       currency: "INR",
       receipt: orderId,
