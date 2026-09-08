@@ -21,7 +21,19 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main className="relative min-h-screen flex items-center overflow-hidden bg-[#0a0a0a] font-sans">
+      <div className="min-h-screen flex flex-col bg-black">
+      <nav className="relative z-50 w-full bg-black/80 backdrop-blur-md border-b border-amber-500/40 px-6 sm:px-10 md:px-14 lg:px-20 py-4 flex items-center shadow-[0_1px_20px_rgba(245,158,11,0.15)]">
+        <Image
+          src="/logo.png"
+          alt="Excel Logo"
+          width={120}
+          height={48}
+          className="object-contain h-10 w-auto"
+          priority
+        />
+      </nav>
+
+      <main className="relative flex-1 flex items-center overflow-hidden bg-[#0a0a0a] font-sans">
         {/* Background Image */}
         <div className="absolute inset-0 z-0">
           <Image 
@@ -93,6 +105,7 @@ export default function Home() {
           </div>
         </div>
       </main>
+      </div>
     </>
   );
 }
