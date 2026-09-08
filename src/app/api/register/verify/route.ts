@@ -6,7 +6,7 @@ import {
   markRegistrationConfirmed,
 } from "@/lib/db";
 
-export const runtime = "edge";
+export const runtime = "nodejs";
 
 /**
  * Verifies the Razorpay Checkout signature and marks the registration confirmed

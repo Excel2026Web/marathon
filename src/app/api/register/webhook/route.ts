@@ -9,8 +9,7 @@ import {
 } from "@/lib/db";
 import { sendRegistrationConfirmationMail } from "@/lib/mailer";
 
-export const runtime = "edge";
-
+export const runtime = "nodejs";
 /**
  * Razorpay webhook endpoint — modelled on
  * Excel-Merch-Backend/src/controllers/PaymentController.ts (`razorPayWebhook` +

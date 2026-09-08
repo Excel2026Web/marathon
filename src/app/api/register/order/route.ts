@@ -4,7 +4,7 @@ import { getRazorpay, RAZORPAY_KEY_ID } from "@/lib/razorpay";
 import { feeForCategory, validateRegistration } from "@/lib/registration";
 import { insertPendingRegistration } from "@/lib/db";
 
-export const runtime = "edge";
+export const runtime = "nodejs";
 
 export async function POST(req: Request) {
   let body: unknown;
