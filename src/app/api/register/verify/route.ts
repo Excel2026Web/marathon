@@ -1,13 +1,20 @@
 import { NextResponse } from "next/server";
 import { createHmac, timingSafeEqual } from "crypto";
 import { RAZORPAY_KEY_SECRET } from "@/lib/razorpay";
-import { sendRegistrationConfirmationMail } from "@/lib/mailer";
 import {
   getRegistrationByOrderId,
   markRegistrationConfirmed,
 } from "@/lib/db";
 
 export const runtime = "nodejs";
+
+/**
+ * Verifies the Razorpay Checkout signature and marks the registration confirmed
+ * so the success screen can render immediately.
+ *
+ * The confirmation email is NOT sent here — that is done only by the
+ * `order.paid` webhook (/api/register/webhook).
+ */
 
 interface VerifyBody {
   orderId?: string;
@@ -88,20 +95,12 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Server error" }, { status: 500 });
   }
 
-  // Only send the mail on the first successful confirmation (avoids duplicates
-  // if the client retries).
-  let mailSent = false;
-  if (firstConfirmation) {
-    mailSent = await sendRegistrationConfirmationMail(reg);
-  }
-
   return NextResponse.json({
     success: true,
     orderId: reg.orderId,
     amount: reg.amount,
     name: reg.fullName,
     email: reg.email,
-    mailSent,
     alreadyConfirmed: !firstConfirmation,
   });
 }

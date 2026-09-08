@@ -329,7 +329,6 @@ export default function RegisterPage() {
     amount: number;
     email: string;
     name: string;
-    mailSent: boolean;
   }>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -517,7 +516,6 @@ export default function RegisterPage() {
               amount: vd.amount,
               email: vd.email,
               name: vd.name,
-              mailSent: vd.mailSent,
             });
           } catch (err) {
             setPayError(
@@ -1052,7 +1050,6 @@ function SuccessCard({
     amount: number;
     email: string;
     name: string;
-    mailSent: boolean;
   };
   oswaldClass: string;
 }) {
@@ -1083,8 +1080,10 @@ function SuccessCard({
         </div>
         <div className="flex justify-between">
           <span className="text-white/50">Confirmation email</span>
-          <span className="text-white/90">
-            {done.mailSent ? `Sent to ${done.email}` : "Will be sent shortly"}
+          <span className="text-white/90 text-right">
+            Sent to {done.email}
+            <br />
+            once payment is settled
           </span>
         </div>
       </div>

@@ -13,6 +13,10 @@ if (!keyId || !keySecret) {
 export const RAZORPAY_KEY_ID = keyId ?? "";
 export const RAZORPAY_KEY_SECRET = keySecret ?? "";
 
+// Used to verify the `X-Razorpay-Signature` on incoming webhooks. Must match the
+// secret configured on the webhook in the Razorpay dashboard.
+export const RAZORPAY_WEBHOOK_SECRET = process.env.RAZORPAY_WEBHOOK_SECRET ?? "";
+
 export const razorpay = new Razorpay({
   key_id: RAZORPAY_KEY_ID,
   key_secret: RAZORPAY_KEY_SECRET,

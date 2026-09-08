@@ -104,6 +104,12 @@ export function ensureSchema(): Promise<void> {
           paid_at                  timestamptz
         )
       `);
+      // Added later: single-shot guard so the confirmation mail (sent only from
+      // the Razorpay webhook) goes out exactly once.
+      await pool.query(
+        `ALTER TABLE "${SCHEMA}".registrations
+           ADD COLUMN IF NOT EXISTS confirmation_mail_sent boolean NOT NULL DEFAULT false`
+      );
       await pool.query(
         `CREATE INDEX IF NOT EXISTS registrations_email_idx ON "${SCHEMA}".registrations (email)`
       );
@@ -182,40 +188,60 @@ export async function getRegistrationByOrderId(
     [orderId]
   );
   if (res.rowCount === 0) return null;
-  const r = res.rows[0];
+  return rowToRegistration(res.rows[0]);
+}
+
+function rowToRegistration(r: Record<string, unknown>): StoredRegistration {
+  const b = (v: unknown): "yes" | "no" => (v ? "yes" : "no");
   return {
-    orderId: r.order_id,
-    razorpayOrderId: r.razorpay_order_id,
-    amount: r.amount_in_rs,
-    createdAt: new Date(r.created_at).getTime(),
-    fullName: r.full_name,
-    email: r.email,
-    phone: r.phone,
-    category: r.category,
-    college: r.college ?? "",
-    courseBranchYear: r.course_branch_year ?? "",
-    tshirtSize: r.tshirt_size,
-    transportRequired: r.transport_required ? "yes" : "no",
-    bloodGroup: r.blood_group,
-    hasMedicalConditions: r.has_medical_conditions ? "yes" : "no",
-    medicalConditions: r.medical_conditions ?? "",
-    onMedication: r.on_medication ? "yes" : "no",
-    medicationDetails: r.medication_details ?? "",
-    hasAllergies: r.has_allergies ? "yes" : "no",
-    allergyDetails: r.allergy_details ?? "",
-    physicalLimitations: r.physical_limitations,
-    emergencyContactName: r.emergency_contact_name,
-    emergencyContactNumber: r.emergency_contact_number,
-    queries: r.queries ?? "",
-    consent: r.consent,
-    status: r.status,
-    razorpayPaymentId: r.razorpay_payment_id ?? undefined,
+    orderId: r.order_id as string,
+    razorpayOrderId: r.razorpay_order_id as string,
+    amount: r.amount_in_rs as number,
+    createdAt: new Date(r.created_at as string).getTime(),
+    fullName: r.full_name as string,
+    email: r.email as string,
+    phone: r.phone as string,
+    category: r.category as StoredRegistration["category"],
+    college: (r.college as string) ?? "",
+    courseBranchYear: (r.course_branch_year as string) ?? "",
+    tshirtSize: r.tshirt_size as string,
+    transportRequired: b(r.transport_required),
+    bloodGroup: r.blood_group as string,
+    hasMedicalConditions: b(r.has_medical_conditions),
+    medicalConditions: (r.medical_conditions as string) ?? "",
+    onMedication: b(r.on_medication),
+    medicationDetails: (r.medication_details as string) ?? "",
+    hasAllergies: b(r.has_allergies),
+    allergyDetails: (r.allergy_details as string) ?? "",
+    physicalLimitations: (r.physical_limitations as string) ?? "",
+    emergencyContactName: r.emergency_contact_name as string,
+    emergencyContactNumber: r.emergency_contact_number as string,
+    queries: (r.queries as string) ?? "",
+    consent: r.consent as boolean,
+    status: r.status as string,
+    razorpayPaymentId: (r.razorpay_payment_id as string) ?? undefined,
   };
 }
 
+/** Looks up a registration the way the merch-backend webhook does: by the
+ *  Razorpay order id together with our receipt (orderId). */
+export async function getRegistrationByRazorpayOrderId(
+  razorpayOrderId: string,
+  orderId: string
+): Promise<StoredRegistration | null> {
+  await ensureSchema();
+  const res = await getPool().query(
+    `SELECT * FROM "${SCHEMA}".registrations
+      WHERE razorpay_order_id = $1 AND order_id = $2`,
+    [razorpayOrderId, orderId]
+  );
+  if (res.rowCount === 0) return null;
+  return rowToRegistration(res.rows[0]);
+}
+
 /**
- * Marks the registration confirmed. Returns false if it was already confirmed
- * (idempotency guard) or not found.
+ * Marks the registration confirmed (checkout signature verified client-side).
+ * Returns false if it was already confirmed. Does NOT send any mail.
  */
 export async function markRegistrationConfirmed(args: {
   orderId: string;
@@ -226,12 +252,55 @@ export async function markRegistrationConfirmed(args: {
   const res = await getPool().query(
     `UPDATE "${SCHEMA}".registrations
         SET status = 'confirmed',
-            razorpay_payment_id = $2,
-            razorpay_signature = $3,
-            paid_at = now()
+            razorpay_payment_id = COALESCE(razorpay_payment_id, $2),
+            razorpay_signature = COALESCE(razorpay_signature, $3),
+            paid_at = COALESCE(paid_at, now())
       WHERE order_id = $1
         AND status <> 'confirmed'`,
     [args.orderId, args.razorpayPaymentId, args.razorpaySignature]
   );
   return (res.rowCount ?? 0) > 0;
+}
+
+/** Confirms from the webhook (`order.paid`). Idempotent; never clobbers an
+ *  existing payment id / paid_at. Does NOT send any mail on its own. */
+export async function confirmRegistrationFromWebhook(
+  orderId: string,
+  razorpayPaymentId: string
+): Promise<void> {
+  await ensureSchema();
+  await getPool().query(
+    `UPDATE "${SCHEMA}".registrations
+        SET status = 'confirmed',
+            razorpay_payment_id = COALESCE(razorpay_payment_id, $2),
+            paid_at = COALESCE(paid_at, now())
+      WHERE order_id = $1`,
+    [orderId, razorpayPaymentId]
+  );
+}
+
+/**
+ * Atomically claims the right to send the confirmation mail for this order.
+ * Returns true for exactly one caller ever; subsequent calls return false.
+ */
+export async function claimConfirmationMail(orderId: string): Promise<boolean> {
+  await ensureSchema();
+  const res = await getPool().query(
+    `UPDATE "${SCHEMA}".registrations
+        SET confirmation_mail_sent = true
+      WHERE order_id = $1 AND confirmation_mail_sent = false`,
+    [orderId]
+  );
+  return (res.rowCount ?? 0) > 0;
+}
+
+/** Releases the claim (call if the mail send failed, so a webhook retry resends). */
+export async function releaseConfirmationMail(orderId: string): Promise<void> {
+  await ensureSchema();
+  await getPool().query(
+    `UPDATE "${SCHEMA}".registrations
+        SET confirmation_mail_sent = false
+      WHERE order_id = $1`,
+    [orderId]
+  );
 }
