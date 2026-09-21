@@ -53,15 +53,15 @@ export default function Home() {
 
           <div className="flex flex-col items-start w-fit text-left drop-shadow-[0_4px_4px_rgba(0,0,0,0.8)] mx-auto md:ml-auto md:mr-0">
 
-            {/* Main Title */}
-            <div className={`mb-3 flex items-baseline gap-2 sm:gap-4 whitespace-nowrap ${bebasNeue.className}`}>
-              <h1 className="text-5xl sm:text-6xl md:text-8xl lg:text-[8rem] tracking-wide uppercase text-white leading-none">
+            {/* Main Title – single h1 for SEO */}
+            <h1 className={`mb-3 flex items-baseline gap-2 sm:gap-4 whitespace-nowrap ${bebasNeue.className}`}>
+              <span className="text-5xl sm:text-6xl md:text-8xl lg:text-[8rem] tracking-wide uppercase text-white leading-none">
                 HEADSTART
-              </h1>
-              <h1 className="text-5xl sm:text-6xl md:text-8xl lg:text-[8rem] tracking-wide uppercase leading-none text-transparent [-webkit-text-stroke:1.5px_#f59e0b] md:[-webkit-text-stroke:2px_#f59e0b] lg:[-webkit-text-stroke:2.5px_#f59e0b]">
+              </span>
+              <span className="text-5xl sm:text-6xl md:text-8xl lg:text-[8rem] tracking-wide uppercase leading-none text-transparent [-webkit-text-stroke:1.5px_#f59e0b] md:[-webkit-text-stroke:2px_#f59e0b] lg:[-webkit-text-stroke:2.5px_#f59e0b]">
                 2.0
-              </h1>
-            </div>
+              </span>
+            </h1>
 
             {/* Subtitle */}
             <h2 className={`text-xl md:text-2xl font-semibold text-amber-100 mb-8 tracking-[0.3em] uppercase ${oswald.className}`}>
